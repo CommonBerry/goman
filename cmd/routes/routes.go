@@ -7,20 +7,23 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func SetupRoutes(app *fiber.App, db *infra.DataBase) {
+func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 	var idb core.IDataBase = db
 
 	// Template Routes
 	templateGroup := app.Group("/templates")
 
 	templateGroup.Get("/", func(c fiber.Ctx) error {
-		templates := idb.ListTemplates()
+		templates, err := idb.ListTemplates(c)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		}
 		return c.JSON(templates)
 	})
 
 	templateGroup.Get("/:name", func(c fiber.Ctx) error {
 		name := c.Params("name")
-		template, err := idb.GetTemplateByName(name)
+		template, err := idb.GetTemplateByName(c, name)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "Template Not Found"})
 		}
@@ -35,32 +38,32 @@ func SetupRoutes(app *fiber.App, db *infra.DataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 		}
 
-		if err := idb.CreateTemplate(template); err != nil {
+		if err := idb.CreateTemplate(c, template); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.Status(201).JSON(template)
 	})
 
-	templateGroup.Put("/:name", func(c fiber.Ctx) error {
+	templateGroup.Put("/:uuid", func(c fiber.Ctx) error {
 		template := new(core.Template)
-		oldName := c.Params("name")
+		uuid := c.Params("uuid")
 
 		if err := c.Bind().Body(template); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 		}
 
-		if err := idb.UpdateTemplate(oldName, template); err != nil {
+		if err := idb.UpdateTemplate(c, uuid, template); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.Status(201).JSON(template)
 	})
 
-	templateGroup.Delete("/:name", func(c fiber.Ctx) error {
-		name := c.Params("name")
+	templateGroup.Delete("/:uuid", func(c fiber.Ctx) error {
+		uuid := c.Params("uuid")
 
-		if err := idb.DeleteTemplate(name); err != nil {
+		if err := idb.DeleteTemplate(c, uuid); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
@@ -71,13 +74,17 @@ func SetupRoutes(app *fiber.App, db *infra.DataBase) {
 	aliasGroup := app.Group("/aliases")
 
 	aliasGroup.Get("/", func(c fiber.Ctx) error {
-		aliases := idb.ListAliases()
+		aliases, err := idb.ListAliases(c)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		}
 		return c.JSON(aliases)
 	})
 
 	aliasGroup.Get("/:name", func(c fiber.Ctx) error {
 		name := c.Params("name")
-		alias, err := idb.GetAliasByName(name)
+
+		alias, err := idb.GetAliasByName(c, name)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "Alias Not Found"})
 		}
@@ -92,32 +99,32 @@ func SetupRoutes(app *fiber.App, db *infra.DataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 		}
 
-		if err := idb.CreateAlias(alias); err != nil {
+		if err := idb.CreateAlias(c, alias); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.Status(201).JSON(alias)
 	})
 
-	aliasGroup.Put("/:name", func(c fiber.Ctx) error {
+	aliasGroup.Put("/:uuid", func(c fiber.Ctx) error {
 		alias := new(core.Alias)
-		oldName := c.Params("name")
+		uuid := c.Params("uuid")
 
 		if err := c.Bind().Body(alias); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid JSON"})
 		}
 
-		if err := idb.UpdateAlias(oldName, alias); err != nil {
+		if err := idb.UpdateAlias(c, uuid, alias); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.Status(201).JSON(alias)
 	})
 
-	aliasGroup.Delete("/:name", func(c fiber.Ctx) error {
-		name := c.Params("name")
+	aliasGroup.Delete("/:uuid", func(c fiber.Ctx) error {
+		uuid := c.Params("uuid")
 
-		if err := idb.DeleteAlias(name); err != nil {
+		if err := idb.DeleteAlias(c, uuid); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 

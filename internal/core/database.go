@@ -1,15 +1,19 @@
 package core
 
-type IDataBase interface {
-	GetAliasByName(name string) (*Alias, error)
-	ListAliases() []*Alias
-	CreateAlias(alias *Alias) error
-	UpdateAlias(oldName string, alias *Alias) error
-	DeleteAlias(name string) error
+import "context"
 
-	GetTemplateByName(name string) (*Template, error)
-	ListTemplates() []*Template
-	CreateTemplate(template *Template) error
-	UpdateTemplate(oldName string, template *Template) error
-	DeleteTemplate(name string) error
+type IDataBase interface {
+	GetAliasByName(ctx context.Context, name string) (*Alias, error)
+	ListAliases(ctx context.Context) ([]*Alias, error)
+	CreateAlias(ctx context.Context, alias *Alias) error
+	UpdateAlias(ctx context.Context, id string, alias *Alias) error
+	DeleteAlias(ctx context.Context, id string) error
+
+	GetTemplateByName(ctx context.Context, name string) (*Template, error)
+	ListTemplates(ctx context.Context) ([]*Template, error)
+	CreateTemplate(ctx context.Context, template *Template) error
+	UpdateTemplate(ctx context.Context, id string, template *Template) error
+	DeleteTemplate(ctx context.Context, id string) error
+
+	Close()
 }
