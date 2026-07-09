@@ -1,0 +1,25 @@
+# Binaries and build output
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go coverage
+.coverprofile
+coverage.out
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local env files
+.env
+.env.*
