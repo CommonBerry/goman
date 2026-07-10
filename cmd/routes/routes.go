@@ -31,7 +31,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.JSON(template)
 	})
 
-	templateGroup.Post("/", func(c fiber.Ctx) error {
+	templateGroup.Post("/", Protected(), func(c fiber.Ctx) error {
 		template := new(core.Template)
 
 		if err := c.Bind().Body(template); err != nil {
@@ -45,7 +45,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.Status(201).JSON(template)
 	})
 
-	templateGroup.Put("/:uuid", func(c fiber.Ctx) error {
+	templateGroup.Put("/:uuid", Protected(), func(c fiber.Ctx) error {
 		template := new(core.Template)
 		uuid := c.Params("uuid")
 
@@ -60,7 +60,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.Status(201).JSON(template)
 	})
 
-	templateGroup.Delete("/:uuid", func(c fiber.Ctx) error {
+	templateGroup.Delete("/:uuid", Protected(), func(c fiber.Ctx) error {
 		uuid := c.Params("uuid")
 
 		if err := idb.DeleteTemplate(c, uuid); err != nil {
@@ -92,7 +92,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.JSON(alias)
 	})
 
-	aliasGroup.Post("/", func(c fiber.Ctx) error {
+	aliasGroup.Post("/", Protected(), func(c fiber.Ctx) error {
 		alias := new(core.Alias)
 
 		if err := c.Bind().Body(alias); err != nil {
@@ -106,7 +106,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.Status(201).JSON(alias)
 	})
 
-	aliasGroup.Put("/:uuid", func(c fiber.Ctx) error {
+	aliasGroup.Put("/:uuid", Protected(), func(c fiber.Ctx) error {
 		alias := new(core.Alias)
 		uuid := c.Params("uuid")
 
@@ -121,7 +121,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 		return c.Status(201).JSON(alias)
 	})
 
-	aliasGroup.Delete("/:uuid", func(c fiber.Ctx) error {
+	aliasGroup.Delete("/:uuid", Protected(), func(c fiber.Ctx) error {
 		uuid := c.Params("uuid")
 
 		if err := idb.DeleteAlias(c, uuid); err != nil {
