@@ -1,7 +1,10 @@
 // Package routes consolidates all Goman API routes.
+// ROTAS PUT, POST E DELETE REQUEREM X-API-Key
 package routes
 
 import (
+	"time"
+
 	"github.com/CommonBerry/goman/internal/core"
 	"github.com/CommonBerry/goman/internal/infra"
 	"github.com/gofiber/fiber/v3"
@@ -10,7 +13,34 @@ import (
 func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 	var idb core.IDataBase = db
 
-	// Template Routes
+	// Health endpoint
+	app.Get("/health", func(c fiber.Ctx) error {
+		checks := make(map[string]string)
+		isHealthy := true
+
+		if err := idb.Ping(c); err != nil {
+			checks["postgres"] = "unhealthy: " + err.Error()
+			isHealthy = false
+		} else {
+			checks["postgres"] = "healthy"
+		}
+
+		response := HealthResponse{
+			Status:    "UP",
+			Timestamp: time.Now().Format(time.RFC3339),
+			Checks:    checks,
+		}
+
+		statusCode := fiber.StatusOK
+		if !isHealthy {
+			response.Status = "DOWN"
+			statusCode = fiber.StatusServiceUnavailable
+		}
+
+		return c.Status(statusCode).JSON(response)
+	})
+
+	// Template Routes é o grupo de rotas que gerencia o repositório de templates do Goman
 	templateGroup := app.Group("/templates")
 
 	templateGroup.Get("/", func(c fiber.Ctx) error {
@@ -57,7 +87,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(201).JSON(template)
+		return c.Status(200).JSON(template)
 	})
 
 	templateGroup.Delete("/:uuid", Protected(), func(c fiber.Ctx) error {
@@ -67,10 +97,10 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.SendStatus(201)
+		return c.SendStatus(204)
 	})
 
-	// Alias Routes
+	// Alias Routes é o grupo de rotas que gerencia o repositório de aliases do Goman
 	aliasGroup := app.Group("/aliases")
 
 	aliasGroup.Get("/", func(c fiber.Ctx) error {
@@ -118,7 +148,7 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(201).JSON(alias)
+		return c.Status(200).JSON(alias)
 	})
 
 	aliasGroup.Delete("/:uuid", Protected(), func(c fiber.Ctx) error {
@@ -128,6 +158,6 @@ func SetupRoutes(app *fiber.App, db *infra.PostgresDataBase) {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.SendStatus(201)
+		return c.SendStatus(204)
 	})
 }

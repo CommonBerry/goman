@@ -12,17 +12,17 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("failed to load enviroment file: %w", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
 	}
 	if port[0] != ':' {
 		port = ":" + port
-	}
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("failed to load enviroment file: %w", err)
 	}
 
 	app := fiber.New()

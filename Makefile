@@ -42,7 +42,7 @@ docker-build:
 	$(COMPOSE) -f $(COMPOSE_FILE) build
 
 docker-up:
-	$(COMPOSE) -f $(COMPOSE_FILE) up -d --build
+	$(COMPOSE) -f $(COMPOSE_FILE) up -d
 
 docker-watch-build:
 	$(COMPOSE) -f $(COMPOSE_FILE) -f $(COMPOSE_WATCH_FILE) build

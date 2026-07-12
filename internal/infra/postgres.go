@@ -230,6 +230,10 @@ func (db *PostgresDataBase) DeleteTemplate(ctx context.Context, id string) error
 	return nil
 }
 
+func (db *PostgresDataBase) Ping(ctx context.Context) error {
+	return db.pool.Ping(ctx)
+}
+
 func (db *PostgresDataBase) Close() {
 	db.pool.Close()
 }

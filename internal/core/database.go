@@ -15,5 +15,6 @@ type IDataBase interface {
 	UpdateTemplate(ctx context.Context, id string, template *Template) error
 	DeleteTemplate(ctx context.Context, id string) error
 
+	Ping(ctx context.Context) error
 	Close()
 }
