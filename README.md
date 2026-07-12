@@ -1,4 +1,8 @@
-# Goman — Gerenciador de Templates e Aliases
+<div align="center">
+  <img width="740" height="417" alt="art" src="https://github.com/user-attachments/assets/6dffa88d-7da5-44fd-b95b-d6456bef1e02" />
+</div>
+
+# Goman API
 
 Goman é uma API REST leve escrita em Go (Fiber) para gerenciar templates e aliases usados pela CLI `gg`. Permite armazenar templates reutilizáveis de projetos Go e criar aliases de pacotes, separando dados da lógica da CLI.
 
