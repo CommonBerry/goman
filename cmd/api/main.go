@@ -8,6 +8,7 @@ import (
 	"github.com/CommonBerry/goman/cmd/routes"
 	"github.com/CommonBerry/goman/internal/infra"
 	"github.com/gofiber/fiber/v3"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -17,6 +18,11 @@ func main() {
 	}
 	if port[0] != ':' {
 		port = ":" + port
+	}
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("failed to load enviroment file: %w", err)
 	}
 
 	app := fiber.New()

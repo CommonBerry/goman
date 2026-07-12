@@ -10,12 +10,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 func NewPostgresDataBase(ctx context.Context) (*PostgresDataBase, error) {
-	_ = godotenv.Load()
-
 	connStr := os.Getenv("DATABASE_URL")
 	if connStr == "" {
 		return nil, fmt.Errorf("DATABASE_URL environment variable is required")
